@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جسور الإشارة الرقمية — المنصة التعليمية</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f4f8;
+  --bg2: #e8eef5;
+  --surface: #ffffff;
+  --surface2: #f7fafc;
+  --border: rgba(30,100,160,0.12);
+  --border2: rgba(30,100,160,0.22);
+  --blue: #1a5fa8;
+  --blue2: #2478c8;
+  --blue-pale: #deeaf8;
+  --blue-pale2: #c5d9f2;
+  --teal: #0e8a6a;
+  --teal2: #12b088;
+  --teal-pale: #d4f0e8;
+  --amber: #c47a12;
+  --amber2: #e8960f;
+  --amber-pale: #fef0d3;
+  --coral: #c0402a;
+  --coral-pale: #fde8e4;
+  --purple: #6244b8;
+  --purple-pale: #ede8fc;
+  --text: #1a2535;
+  --text2: #3d5068;
+  --text3: #7a92aa;
+  --shadow: 0 2px 16px rgba(26,95,168,0.10);
+  --shadow2: 0 8px 32px rgba(26,95,168,0.16);
+  --radius: 14px;
+  --radius2: 20px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ===== LOGIN PAGE (FULL SCREEN) ===== */
+#loginPage{
+  display:none;position:fixed;inset:0;z-index:1000;
+  background:linear-gradient(135deg,#0d2245 0%,#1a5fa8 50%,#0e8a6a 100%);
+  overflow-y:auto;
+  align-items:center;justify-content:center;
+  flex-direction:column;padding:1rem;
+  min-height:100vh;
+}
+#loginPage.active{display:flex;}
+.lp-logo{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  margin-bottom:2rem;
+}
+.lp-logo-icon{
+  width:80px;height:80px;border-radius:22px;
+  background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:44px;margin-bottom:8px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.3);
+}
+.lp-title{
+  font-family:'Tajawal',sans-serif;font-size:1.8rem;font-weight:900;
+  color:#fff;text-align:center;
+}
+.lp-subtitle{
+  font-size:14px;color:rgba(255,255,255,0.7);text-align:center;margin-top:4px;
+}
+.lp-card{
+  background:rgba(255,255,255,0.97);
+  border-radius:22px;width:100%;max-width:420px;
+  box-shadow:0 32px 80px rgba(0,0,0,0.4);
+  overflow:hidden;
+}
+.lp-tabs{display:flex;border-bottom:1.5px solid var(--border);}
+.lp-tab{
+  flex:1;padding:16px;text-align:center;font-family:'Cairo',sans-serif;
+  font-size:14px;font-weight:700;color:var(--text3);cursor:pointer;
+  border:none;background:none;border-bottom:3px solid transparent;
+  transition:all .18s;
+}
+.lp-tab.active{color:var(--blue);border-bottom-color:var(--blue);background:var(--blue-pale);}
+.lp-form{padding:1.8rem;display:flex;flex-direction:column;gap:14px;}
+.lp-form.hidden{display:none;}
+
+/* ===== PLATFORM CONTENT GUARD ===== */
+#platformContent{display:none;}
+#platformContent.visible{display:block;}
+
+/* ===== TOPBAR ===== */
+.topbar{
+  position:fixed;top:0;right:0;left:0;z-index:200;
+  background:rgba(255,255,255,0.96);
+  backdrop-filter:blur(14px);
+  border-bottom:1.5px solid var(--border);
+  height:60px;display:flex;align-items:center;
+  padding:0 1.5rem;gap:1rem;
+}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--blue),var(--teal2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:#fff;font-weight:900;
+  font-family:'Tajawal',sans-serif;flex-shrink:0;
+}
+.logo-text{font-size:15px;font-weight:700;color:var(--blue);}
+.topbar-nav{display:flex;gap:4px;margin-right:auto;}
+.tnav-btn{
+  background:none;border:none;border-radius:8px;
+  padding:6px 14px;font-family:'Cairo',sans-serif;
+  font-size:13px;font-weight:600;color:var(--text2);
+  cursor:pointer;transition:all .18s;
+}
+.tnav-btn:hover,.tnav-btn.active{background:var(--blue-pale);color:var(--blue);}
+.topbar-badge{
+  background:var(--teal-pale);color:var(--teal);
+  font-size:11px;font-weight:700;padding:4px 12px;
+  border-radius:20px;border:1px solid rgba(14,138,106,0.2);
+}
+
+/* ===== AUTH BUTTONS IN TOPBAR ===== */
+.topbar-auth{display:flex;align-items:center;gap:8px;margin-right:auto;}
+.btn-login{
+  background:none;border:1.5px solid var(--blue);
+  color:var(--blue);border-radius:8px;
+  padding:6px 16px;font-family:'Cairo',sans-serif;
+  font-size:13px;font-weight:700;cursor:pointer;
+  transition:all .18s;
+}
+.btn-login:hover{background:var(--blue-pale);}
+.btn-register{
+  background:var(--blue);border:none;
+  color:#fff;border-radius:8px;
+  padding:6px 16px;font-family:'Cairo',sans-serif;
+  font-size:13px;font-weight:700;cursor:pointer;
+  transition:background .18s;
+}
+.btn-register:hover{background:var(--blue2);}
+
+/* ===== PROFILE DROPDOWN ===== */
+.profile-dropdown-wrap{position:relative;}
+.profile-avatar-btn{
+  display:flex;align-items:center;gap:8px;
+  background:none;border:1.5px solid var(--border);
+  border-radius:10px;padding:5px 10px 5px 5px;
+  cursor:pointer;transition:all .18s;
+}
+.profile-avatar-btn:hover{border-color:var(--blue);background:var(--blue-pale);}
+.avatar-circle{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--teal2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:900;color:#fff;flex-shrink:0;
+  font-family:'Tajawal',sans-serif;overflow:hidden;
+}
+.avatar-circle img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.avatar-name{font-size:12px;font-weight:700;color:var(--text);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.avatar-chevron{font-size:10px;color:var(--text3);}
+.profile-dropdown{
+  position:absolute;top:calc(100% + 8px);left:0;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius);box-shadow:var(--shadow2);
+  min-width:220px;padding:8px;z-index:300;
+  opacity:0;transform:translateY(-8px) scale(.97);
+  pointer-events:none;transition:all .18s;
+}
+.profile-dropdown.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all;}
+.dropdown-header{
+  padding:10px 12px 12px;border-bottom:1px solid var(--border);margin-bottom:6px;
+}
+.dh-name{font-size:14px;font-weight:700;color:var(--text);}
+.dh-email{font-size:11px;color:var(--text3);}
+.dh-progress{margin-top:8px;}
+.dh-prog-label{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px;display:flex;justify-content:space-between;}
+.dh-prog-bar{height:6px;background:var(--bg2);border-radius:20px;overflow:hidden;}
+.dh-prog-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--blue),var(--teal2));transition:width .4s ease;}
+.dropdown-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:8px;
+  font-size:13px;font-weight:600;color:var(--text2);
+  cursor:pointer;transition:all .15s;border:none;background:none;
+  width:100%;font-family:'Cairo',sans-serif;text-align:right;
+}
+.dropdown-item:hover{background:var(--bg2);color:var(--text);}
+.dropdown-item.danger{color:var(--coral);}
+.dropdown-item.danger:hover{background:var(--coral-pale);}
+.di-icon{font-size:16px;flex-shrink:0;}
+
+/* ===== AUTH MODAL ===== */
+.auth-overlay{
+  display:none;position:fixed;inset:0;z-index:600;
+  background:rgba(10,20,40,0.88);
+  backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;padding:1rem;
+}
+.auth-overlay.open{display:flex;}
+.auth-box{
+  background:var(--surface);border-radius:var(--radius2);
+  width:100%;max-width:420px;
+  box-shadow:0 32px 80px rgba(0,0,0,0.4);
+  overflow:hidden;
+}
+.auth-header{
+  background:linear-gradient(135deg,var(--blue),var(--teal2));
+  padding:2rem 2rem 1.5rem;text-align:center;
+}
+.auth-logo-big{font-size:3rem;margin-bottom:.5rem;}
+.auth-title{font-family:'Tajawal',sans-serif;font-size:1.4rem;font-weight:900;color:#fff;}
+.auth-subtitle{font-size:13px;color:rgba(255,255,255,.7);margin-top:4px;}
+.auth-tabs{display:flex;border-bottom:1px solid var(--border);}
+.auth-tab{
+  flex:1;padding:14px;text-align:center;font-family:'Cairo',sans-serif;
+  font-size:13px;font-weight:700;color:var(--text3);cursor:pointer;
+  border:none;background:none;border-bottom:2px solid transparent;
+  transition:all .18s;
+}
+.auth-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.auth-form{padding:1.8rem;display:flex;flex-direction:column;gap:14px;}
+.auth-form.hidden{display:none;}
+.auth-field{display:flex;flex-direction:column;gap:6px;}
+.auth-label{font-size:12px;font-weight:700;color:var(--text2);}
+.auth-input{
+  border:1.5px solid var(--border);border-radius:10px;
+  padding:10px 14px;font-family:'Cairo',sans-serif;
+  font-size:14px;color:var(--text);background:var(--surface);
+  outline:none;transition:border-color .18s;
+}
+.auth-input:focus{border-color:var(--blue);}
+.auth-select{
+  border:1.5px solid var(--border);border-radius:10px;
+  padding:10px 14px;font-family:'Cairo',sans-serif;
+  font-size:13px;color:var(--text);background:var(--surface);
+  outline:none;cursor:pointer;appearance:none;
+}
+.auth-btn{
+  background:var(--blue);color:#fff;border:none;
+  border-radius:10px;padding:12px;
+  font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;
+  cursor:pointer;transition:background .18s;margin-top:4px;
+}
+.auth-btn:hover{background:var(--blue2);}
+.auth-error{
+  background:var(--coral-pale);color:var(--coral);
+  border-radius:8px;padding:10px 14px;
+  font-size:12px;font-weight:600;
+  display:none;
+}
+.auth-error.show{display:block;}
+.auth-close{
+  position:absolute;top:14px;left:14px;
+  background:rgba(255,255,255,.15);border:none;
+  border-radius:8px;width:32px;height:32px;
+  font-size:16px;color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.auth-close:hover{background:rgba(255,255,255,.25);}
+
+/* ===== PROFILE PAGE ===== */
+#sec-profile{display:none;}
+.profile-hero{
+  background:linear-gradient(135deg,#1a3a6e 0%,#1a5fa8 45%,#0e8a6a 100%);
+  padding:3rem 2rem 2.5rem;text-align:center;
+  position:relative;overflow:hidden;
+}
+.profile-hero::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none;
+}
+.profile-avatar-large{
+  width:90px;height:90px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(255,255,255,.25),rgba(255,255,255,.1));
+  border:3px solid rgba(255,255,255,.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;font-weight:900;color:#fff;
+  font-family:'Tajawal',sans-serif;
+  margin:0 auto 1rem;position:relative;z-index:1;overflow:hidden;
+}
+.profile-avatar-large img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.profile-name{font-family:'Tajawal',sans-serif;font-size:1.8rem;font-weight:900;color:#fff;margin-bottom:4px;position:relative;z-index:1;}
+.profile-stage{font-size:13px;color:rgba(255,255,255,.7);position:relative;z-index:1;}
+.profile-stats{
+  display:flex;justify-content:center;gap:2rem;
+  margin-top:1.8rem;padding-top:1.5rem;
+  border-top:1px solid rgba(255,255,255,.15);
+  flex-wrap:wrap;position:relative;z-index:1;
+}
+.pstat .num{font-family:'Tajawal',sans-serif;font-size:1.6rem;font-weight:900;color:#7ee8c8;}
+.pstat .lbl{font-size:11px;color:rgba(255,255,255,.6);}
+
+.profile-body{max-width:760px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+.profile-section-title{
+  font-family:'Tajawal',sans-serif;font-size:1.1rem;font-weight:900;
+  color:var(--text);margin-bottom:1rem;
+  display:flex;align-items:center;gap:8px;
+}
+.profile-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius2);padding:1.4rem;margin-bottom:1.4rem;
+}
+
+/* Progress bar in profile */
+.big-progress-bar{
+  height:16px;background:var(--bg2);border-radius:20px;overflow:hidden;margin:10px 0;
+}
+.big-progress-fill{
+  height:100%;border-radius:20px;
+  background:linear-gradient(90deg,var(--blue),var(--teal2));
+  transition:width .6s cubic-bezier(.4,0,.2,1);
+  position:relative;
+}
+.big-progress-fill::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+  animation:shimmer 1.8s infinite;
+}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+/* Completed lessons list */
+.completed-list{display:flex;flex-direction:column;gap:8px;}
+.completed-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;background:var(--surface2);
+  border:1px solid var(--border);border-radius:10px;
+}
+.ci-check{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--teal-pale);color:var(--teal);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+}
+.ci-title{font-size:13px;font-weight:600;color:var(--text);flex:1;}
+.ci-cat{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;}
+.resume-btn{
+  display:flex;align-items:center;gap:8px;
+  background:var(--blue);color:#fff;border:none;
+  border-radius:10px;padding:10px 20px;
+  font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;
+  cursor:pointer;transition:background .18s;
+}
+.resume-btn:hover{background:var(--blue2);}
+.resume-btn:disabled{background:var(--bg2);color:var(--text3);cursor:default;}
+
+/* ===== INFO CARDS ===== */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:10px;}
+.info-card{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;padding:12px;text-align:center;
+}
+.ic-num{font-family:'Tajawal',sans-serif;font-size:1.6rem;font-weight:900;color:var(--blue);}
+.ic-lbl{font-size:11px;color:var(--text3);}
+
+/* ===== LESSON CARD COMPLETED STATE ===== */
+.lesson-card.completed .video-thumb::after{
+  content:'✓ مكتمل';
+  position:absolute;top:10px;left:10px;
+  background:var(--teal);color:#fff;
+  font-size:10px;font-weight:700;padding:3px 10px;
+  border-radius:20px;z-index:3;
+  font-family:'Cairo',sans-serif;
+}
+.lesson-card.completed{border-color:var(--teal);}
+
+/* ===== HERO ===== */
+.hero{
+  margin-top:60px;
+  background:linear-gradient(135deg,#1a3a6e 0%,#1a5fa8 45%,#0e8a6a 100%);
+  padding:3.5rem 2rem 3rem;
+  position:relative;overflow:hidden;
+  text-align:center;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);
+  border-radius:100px;padding:5px 16px;
+  font-size:12px;color:rgba(255,255,255,0.85);font-weight:600;
+  margin-bottom:1.2rem;
+}
+.hero h1{
+  font-family:'Tajawal',sans-serif;
+  font-size:clamp(2rem,5vw,3.4rem);font-weight:900;
+  color:#fff;line-height:1.2;margin-bottom:.8rem;
+}
+.hero h1 span{color:#7ee8c8;}
+.hero-sub{
+  font-size:15px;color:rgba(255,255,255,0.75);
+  max-width:560px;margin:0 auto 2rem;line-height:1.8;
+}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-hero{
+  border-radius:10px;padding:12px 28px;
+  font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .2s;border:none;
+}
+.btn-hero-primary{background:#fff;color:var(--blue);}
+.btn-hero-primary:hover{background:#deeaf8;transform:translateY(-2px);}
+.btn-hero-ghost{background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.25);}
+.btn-hero-ghost:hover{background:rgba(255,255,255,0.2);}
+.hero-stats{
+  display:flex;justify-content:center;gap:2rem;
+  margin-top:2.5rem;padding-top:2rem;
+  border-top:1px solid rgba(255,255,255,0.15);
+  flex-wrap:wrap;
+}
+.hero-stat .num{font-family:'Tajawal',sans-serif;font-size:2rem;font-weight:900;color:#7ee8c8;}
+.hero-stat .lbl{font-size:12px;color:rgba(255,255,255,0.6);}
+
+/* ===== MAIN LAYOUT ===== */
+.main{max-width:1100px;margin:0 auto;padding:2.5rem 1.5rem 4rem;}
+
+/* ===== SECTION HEADER ===== */
+.sec-head{margin-bottom:1.8rem;}
+.sec-eyebrow{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--blue);
+  background:var(--blue-pale);border-radius:20px;
+  padding:4px 12px;margin-bottom:10px;
+}
+.sec-title{font-family:'Tajawal',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:900;color:var(--text);margin-bottom:6px;}
+.sec-sub{font-size:14px;color:var(--text3);line-height:1.8;max-width:580px;}
+
+/* ===== TABS ===== */
+.tabs-wrap{
+  display:flex;gap:8px;margin-bottom:2rem;
+  background:var(--surface);border-radius:var(--radius);
+  padding:6px;border:1.5px solid var(--border);
+  overflow-x:auto;
+}
+.tab-btn{
+  display:flex;align-items:center;gap:8px;
+  background:none;border:none;border-radius:10px;
+  padding:10px 18px;font-family:'Cairo',sans-serif;
+  font-size:13px;font-weight:600;color:var(--text2);
+  cursor:pointer;transition:all .18s;white-space:nowrap;
+}
+.tab-btn .tab-icon{font-size:18px;}
+.tab-btn:hover{background:var(--bg2);color:var(--text);}
+.tab-btn.active{background:var(--blue);color:#fff;box-shadow:var(--shadow);}
+.tab-content{display:none;}
+.tab-content.active{display:block;animation:fadeIn .25s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== LESSON GRID ===== */
+.lessons-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(310px,1fr));
+  gap:1.4rem;
+}
+.lesson-card{
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius2);
+  overflow:hidden;
+  transition:all .22s;
+  cursor:pointer;
+}
+.lesson-card:hover{
+  border-color:var(--blue);
+  box-shadow:var(--shadow2);
+  transform:translateY(-3px);
+}
+.lesson-card.active-card{border-color:var(--blue);box-shadow:var(--shadow2);}
+
+.video-thumb{
+  position:relative;background:#0a1628;
+  height:180px;overflow:hidden;cursor:pointer;
+}
+.video-thumb img{pointer-events:none;}
+.video-thumb iframe{width:100%;height:100%;border:none;display:block;}
+.thumb-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(10,22,40,.7) 0%,transparent 50%);
+  pointer-events:none;z-index:1;
+}
+.thumb-badge{
+  position:absolute;top:10px;right:10px;
+  background:rgba(255,255,255,0.15);backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,0.2);
+  color:#fff;font-size:10px;font-weight:700;
+  padding:3px 10px;border-radius:20px;z-index:2;pointer-events:none;
+}
+.thumb-duration{
+  position:absolute;bottom:10px;left:10px;
+  background:rgba(0,0,0,0.6);color:#fff;font-size:10px;
+  padding:3px 8px;border-radius:6px;z-index:2;pointer-events:none;
+}
+.play-btn{
+  position:absolute;inset:0;display:flex;
+  align-items:center;justify-content:center;
+  background:none;border:none;cursor:pointer;z-index:3;
+}
+.play-circle{
+  width:56px;height:56px;border-radius:50%;
+  background:rgba(255,255,255,0.92);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;transition:all .2s;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+.play-circle:hover{background:#fff;transform:scale(1.12);}
+
+.card-body{padding:1.2rem;}
+.card-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;}
+.card-cat{
+  font-size:10px;font-weight:700;padding:3px 10px;
+  border-radius:20px;flex-shrink:0;letter-spacing:.5px;
+}
+.cat-math{background:var(--blue-pale);color:var(--blue);}
+.cat-life{background:var(--teal-pale);color:var(--teal);}
+.cat-arabic{background:var(--amber-pale);color:var(--amber);}
+.cat-science{background:var(--purple-pale);color:var(--purple);}
+.cat-parent{background:var(--coral-pale);color:var(--coral);}
+.card-title{font-size:14px;font-weight:700;color:var(--text);line-height:1.5;}
+
+.card-explanation{
+  background:var(--surface2);border-radius:10px;padding:12px 14px;
+  border:1px solid var(--border);
+}
+.exp-label{
+  font-size:10px;font-weight:700;color:var(--text3);
+  letter-spacing:1px;text-transform:uppercase;
+  margin-bottom:8px;display:flex;align-items:center;gap:5px;
+}
+.exp-points{display:flex;flex-direction:column;gap:6px;}
+.exp-point{
+  display:flex;align-items:flex-start;gap:8px;
+  font-size:12px;color:var(--text2);line-height:1.6;
+}
+.exp-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--blue);flex-shrink:0;margin-top:5px;
+}
+.card-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:12px;padding-top:10px;border-top:1px solid var(--border);
+}
+.card-level{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;}
+.card-watch{
+  background:var(--blue);color:#fff;border:none;border-radius:8px;
+  padding:7px 16px;font-family:'Cairo',sans-serif;
+  font-size:12px;font-weight:700;cursor:pointer;transition:background .18s;
+}
+.card-watch:hover{background:var(--blue2);}
+
+/* ===== VIDEO PLAYER MODAL ===== */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(10,20,40,0.88);backdrop-filter:blur(6px);
+  padding:1rem;overflow-y:auto;
+}
+.modal-overlay.open{
+  display:flex;align-items:flex-start;justify-content:center;padding-top:2rem;
+}
+.modal-box{
+  background:var(--surface);border-radius:var(--radius2);
+  width:100%;max-width:820px;max-height:90vh;
+  overflow-y:auto;position:relative;
+  box-shadow:0 24px 80px rgba(0,0,0,0.5);
+}
+.modal-close{
+  position:absolute;top:14px;left:14px;
+  background:rgba(0,0,0,0.08);border:none;
+  border-radius:8px;width:36px;height:36px;
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text2);transition:background .15s;z-index:2;
+}
+.modal-close:hover{background:rgba(0,0,0,0.15);}
+.modal-video{width:100%;aspect-ratio:16/9;background:#000;min-height:200px;}
+.modal-video iframe{width:100%;height:100%;border:none;display:block;}
+.modal-content{padding:1.8rem 1.8rem 2rem;}
+.modal-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:1.4rem;}
+.modal-cat-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+}
+.modal-title{font-family:'Tajawal',sans-serif;font-size:20px;font-weight:900;color:var(--text);margin-bottom:4px;}
+.modal-subtitle{font-size:13px;color:var(--text3);}
+.modal-sections{display:grid;gap:1rem;}
+.msec{
+  background:var(--surface2);border-radius:12px;
+  border:1.5px solid var(--border);padding:1.2rem;
+}
+.msec-title{
+  font-size:12px;font-weight:700;color:var(--text2);
+  letter-spacing:1px;text-transform:uppercase;
+  margin-bottom:10px;display:flex;align-items:center;gap:6px;
+}
+.msec-title span{font-size:16px;}
+.msec-list{display:flex;flex-direction:column;gap:8px;}
+.msec-item{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:13px;color:var(--text2);line-height:1.7;
+}
+.msec-num{
+  min-width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;
+}
+.caption-screen{
+  background:#111;color:#fff;font-family:'Tajawal',sans-serif;
+  font-size:clamp(1.2rem,3vw,1.8rem);font-weight:900;text-align:center;
+  border-radius:8px;padding:14px 20px;margin-bottom:8px;
+}
+.caption-screen .hl{color:#7ee8c8;}
+.caption-hint{
+  background:var(--teal-pale);color:var(--teal);
+  border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;
+  display:flex;align-items:center;gap:6px;margin-bottom:10px;
+  border:1px solid rgba(14,138,106,0.2);
+}
+.tags-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.tag{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;}
+
+/* Mark complete button inside modal */
+.mark-complete-btn{
+  width:100%;background:var(--teal);color:#fff;border:none;
+  border-radius:10px;padding:12px;font-family:'Cairo',sans-serif;
+  font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:1rem;
+}
+.mark-complete-btn:hover{background:var(--teal2);}
+.mark-complete-btn.done{background:var(--teal-pale);color:var(--teal);cursor:default;}
+
+/* ===== PARENT SECTION ===== */
+.parent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;}
+.parent-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius2);padding:1.4rem;transition:all .2s;
+}
+.parent-card:hover{border-color:var(--teal);box-shadow:var(--shadow);}
+.parent-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:1rem;}
+.parent-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.parent-text{font-size:13px;color:var(--text2);line-height:1.8;}
+.parent-link{
+  display:inline-flex;align-items:center;gap:5px;
+  margin-top:12px;background:none;border:1.5px solid var(--teal);
+  color:var(--teal);border-radius:8px;padding:7px 14px;
+  font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;
+  cursor:pointer;transition:all .18s;text-decoration:none;
+}
+.parent-link:hover{background:var(--teal-pale);}
+
+/* ===== TIPS GUIDE ===== */
+.tips-wrap{
+  background:linear-gradient(135deg,var(--blue) 0%,var(--teal) 100%);
+  border-radius:var(--radius2);padding:2.5rem;margin-top:2rem;color:#fff;
+}
+.tips-title{font-family:'Tajawal',sans-serif;font-size:1.6rem;font-weight:900;margin-bottom:.5rem;}
+.tips-sub{font-size:14px;opacity:.8;margin-bottom:1.8rem;}
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;}
+.tip-card{background:rgba(255,255,255,0.12);border-radius:12px;padding:1rem 1.2rem;border:1px solid rgba(255,255,255,0.15);}
+.tip-num{font-family:'Tajawal',sans-serif;font-size:2rem;font-weight:900;opacity:.3;line-height:1;}
+.tip-text{font-size:13px;line-height:1.7;margin-top:4px;}
+
+/* ===== THEORY SECTION ===== */
+.theory-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.2rem;}
+.theory-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius2);padding:1.4rem;transition:all .2s;
+}
+.theory-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.theory-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.theory-num{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex-shrink:0;}
+.theory-name{font-size:13px;font-weight:700;color:var(--text);}
+.theory-en{font-size:10px;color:var(--text3);margin-top:1px;}
+.theory-text{font-size:12px;color:var(--text2);line-height:1.8;}
+.theory-apply{
+  margin-top:10px;padding-top:10px;border-top:1px solid var(--border);
+  font-size:11px;color:var(--teal);font-weight:600;
+  display:flex;align-items:flex-start;gap:5px;
+}
+
+/* ===== SEARCH ===== */
+.search-bar{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:12px;padding:10px 16px;margin-bottom:1.5rem;transition:border-color .18s;
+}
+.search-bar:focus-within{border-color:var(--blue);}
+.search-bar input{border:none;outline:none;background:none;font-family:'Cairo',sans-serif;font-size:14px;color:var(--text);flex:1;}
+.search-bar input::placeholder{color:var(--text3);}
+.search-icon{font-size:18px;color:var(--text3);}
+
+/* ===== PROGRESS STRIP ===== */
+.progress-strip{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius);padding:1.2rem 1.5rem;
+  display:flex;align-items:center;gap:1.5rem;
+  margin-bottom:2rem;flex-wrap:wrap;
+}
+.prog-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.prog-num{font-family:'Tajawal',sans-serif;font-size:1.5rem;font-weight:900;}
+.prog-lbl{font-size:11px;color:var(--text3);}
+.prog-bar-wrap{flex:1;min-width:160px;}
+.prog-bar-label{font-size:12px;color:var(--text2);font-weight:600;margin-bottom:6px;}
+.prog-bar{height:8px;background:var(--bg2);border-radius:20px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--blue),var(--teal2));transition:width .5s ease;}
+
+/* Toast notification */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:var(--teal);color:#fff;border-radius:12px;
+  padding:12px 24px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;
+  box-shadow:0 8px 32px rgba(0,0,0,0.2);z-index:999;
+  display:flex;align-items:center;gap:8px;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--blue-pale2);border-radius:20px;}
+
+/* responsive */
+@media(max-width:640px){
+  .topbar-nav{display:none;}
+  .hero{padding:2.5rem 1rem 2rem;}
+  .main{padding:1.5rem 1rem 3rem;}
+  .modal-content{padding:1.2rem;}
+  .tips-wrap{padding:1.5rem;}
+  .auth-box{max-width:100%;}
+  .topbar-badge{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- LOGIN PAGE — يظهر للزوار غير المسجلين فقط -->
+<!-- ============================================================ -->
+<div id="loginPage" class="active">
+  <div class="lp-logo">
+    <div class="lp-logo-icon">🤟</div>
+    <div class="lp-title">جسور الإشارة الرقمية</div>
+    <div class="lp-subtitle">منصة التعلم التفاعلي لذوي الإعاقة السمعية</div>
+  </div>
+  <div class="lp-card">
+    <div class="lp-tabs">
+      <button class="lp-tab active" id="lpLoginTab" onclick="lpSwitchTab('login')">🔑 تسجيل الدخول</button>
+      <button class="lp-tab" id="lpRegisterTab" onclick="lpSwitchTab('register')">✨ حساب جديد</button>
+    </div>
+
+    <!-- Login Form -->
+    <div class="lp-form" id="lpLoginForm">
+      <div class="auth-error" id="lpLoginError"></div>
+      <div class="auth-field">
+        <label class="auth-label">البريد الإلكتروني</label>
+        <input type="email" class="auth-input" id="lpLoginEmail" placeholder="example@email.com">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">كلمة المرور</label>
+        <input type="password" class="auth-input" id="lpLoginPass" placeholder="••••••••"
+          onkeydown="if(event.key==='Enter') lpDoLogin()">
+      </div>
+      <button class="auth-btn" onclick="lpDoLogin()">🔑 دخول</button>
+      <div style="text-align:center;font-size:12px;color:var(--text3);margin-top:-4px;">
+        ليس لديك حساب؟ <span style="color:var(--blue);cursor:pointer;font-weight:700;" onclick="lpSwitchTab('register')">أنشئ حساباً الآن</span>
+      </div>
+    </div>
+
+    <!-- Register Form -->
+    <div class="lp-form hidden" id="lpRegisterForm">
+      <div class="auth-error" id="lpRegisterError"></div>
+      <div class="auth-field">
+        <label class="auth-label">الاسم الكامل</label>
+        <input type="text" class="auth-input" id="lpRegName" placeholder="اسمك كاملاً">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">البريد الإلكتروني</label>
+        <input type="email" class="auth-input" id="lpRegEmail" placeholder="example@email.com">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">كلمة المرور</label>
+        <input type="password" class="auth-input" id="lpRegPass" placeholder="على الأقل ٦ أحرف">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">نوع الحساب</label>
+        <select class="auth-select" id="lpRegRole">
+          <option value="student">🎒 طالب</option>
+          <option value="parent">👨‍👩‍👧 ولي أمر</option>
+          <option value="teacher">🏫 معلم</option>
+        </select>
+      </div>
+      <div class="auth-field" id="lpStageWrap">
+        <label class="auth-label">المرحلة الدراسية</label>
+        <select class="auth-select" id="lpRegStage">
+          <option value="الروضة">الروضة (4-5 سنوات)</option>
+          <option value="الابتدائية الأولى" selected>الابتدائية الأولى (6-7 سنوات)</option>
+          <option value="الابتدائية المتوسطة">الابتدائية المتوسطة (8-9 سنوات)</option>
+          <option value="الابتدائية العليا">الابتدائية العليا (10-12 سنة)</option>
+          <option value="الإعدادية">الإعدادية</option>
+        </select>
+      </div>
+      <button class="auth-btn" onclick="lpDoRegister()">✨ إنشاء الحساب</button>
+      <div style="text-align:center;font-size:12px;color:var(--text3);margin-top:-4px;">
+        لديك حساب؟ <span style="color:var(--blue);cursor:pointer;font-weight:700;" onclick="lpSwitchTab('login')">سجل الدخول</span>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:1.5rem;font-size:12px;color:rgba(255,255,255,0.5);text-align:center;">
+    د/ إيمان العشيري — جسور الإشارة الرقمية 2026
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PLATFORM CONTENT — مخفي حتى تسجيل الدخول -->
+<!-- ============================================================ -->
+<div id="platformContent">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">🤟</div>
+    <span class="logo-text">جسور الإشارة الرقمية</span>
+  </div>
+  <nav class="topbar-nav">
+    <button class="tnav-btn active" onclick="showSection('home')">الرئيسية</button>
+    <button class="tnav-btn" onclick="showSection('lessons')">الدروس</button>
+    <button class="tnav-btn" onclick="showSection('parents')">للأهل والمعلمين</button>
+    <button class="tnav-btn" onclick="showSection('theory')">الأسس النظرية</button>
+  </nav>
+  <div class="topbar-auth" id="topbarAuth">
+    <!-- Injected by JS based on login state -->
+  </div>
+  <div class="topbar-badge">د/ إيمان العشيري — 2026</div>
+  <button id="topbarLogoutBtn" onclick="doLogout()" style="display:none;background:var(--coral-pale);color:var(--coral);border:1.5px solid var(--coral);border-radius:8px;padding:6px 14px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">🚪 خروج</button>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="sec-home">
+  <div class="hero-eyebrow">🎓 منصة تعليمية تفاعلية شاملة</div>
+  <h1>جسور الإشارة<br><span>الرقمية</span></h1>
+  <p class="hero-sub">منصة متكاملة لذوي الإعاقة السمعية — مواد دراسية ومهارات حياتية ومجتمع داعم، كل المحتوى بلغة الإشارة مع شرح نصي مكبر</p>
+  <div class="hero-btns">
+    <button class="btn-hero btn-hero-primary" onclick="showSection('lessons')">ابدأ التعلم الآن</button>
+    <button class="btn-hero btn-hero-ghost" onclick="showSection('parents')">قسم الأهل والمعلمين</button>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">٢٠+</div><div class="lbl">درس متاح</div></div>
+    <div class="hero-stat"><div class="num">٤</div><div class="lbl">مواد دراسية</div></div>
+    <div class="hero-stat"><div class="num">٦–١٢</div><div class="lbl">الفئة العمرية</div></div>
+    <div class="hero-stat"><div class="num">١٠٠٪</div><div class="lbl">بصري تفاعلي</div></div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- LESSONS SECTION -->
+<!-- ============================================================ -->
+<div id="sec-lessons" style="display:none;">
+<div class="main">
+  <div class="sec-head">
+    <div class="sec-eyebrow">📚 مكتبة الدروس</div>
+    <h2 class="sec-title">تعلم بالطريقة اللي تناسبك</h2>
+    <p class="sec-sub">كل درس فيديو يوتيوب + شرح نصي مكبر + نقاط الحركات والتعبيرات</p>
+  </div>
+
+  <!-- progress -->
+  <div class="progress-strip" id="progressStrip">
+    <div class="prog-item"><div class="prog-num" id="watchedCount" style="color:var(--blue);">٠</div><div class="prog-lbl">دروس مشاهدة</div></div>
+    <div class="prog-item"><div class="prog-num" style="color:var(--teal);">١٠</div><div class="prog-lbl">إجمالي الدروس</div></div>
+    <div class="prog-bar-wrap">
+      <div class="prog-bar-label">تقدمك في المنصة</div>
+      <div class="prog-bar"><div class="prog-fill" id="mainProgressFill" style="width:0%;"></div></div>
+    </div>
+    <button class="resume-btn" id="resumeBtn" onclick="resumeLastLesson()" disabled>
+      ▶ آخر درس
+    </button>
+  </div>
+
+  <!-- search -->
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="ابحث عن درس..." oninput="filterLessons(this.value)">
+  </div>
+
+  <!-- tabs -->
+  <div class="tabs-wrap" id="catTabs">
+    <button class="tab-btn active" onclick="filterCat('all',this)"><span class="tab-icon">🌟</span> الكل</button>
+    <button class="tab-btn" onclick="filterCat('math',this)"><span class="tab-icon">🔢</span> رياضيات</button>
+    <button class="tab-btn" onclick="filterCat('arabic',this)"><span class="tab-icon">📖</span> لغة عربية</button>
+    <button class="tab-btn" onclick="filterCat('science',this)"><span class="tab-icon">🔬</span> علوم</button>
+    <button class="tab-btn" onclick="filterCat('life',this)"><span class="tab-icon">💬</span> مهارات حياتية</button>
+  </div>
+
+  <!-- lessons grid -->
+  <div class="lessons-grid" id="lessonsGrid"></div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PROFILE SECTION -->
+<!-- ============================================================ -->
+<div id="sec-profile" style="display:none;">
+  <div class="profile-hero" id="profileHero">
+    <div class="profile-avatar-large" id="profileAvatarLarge">🎓</div>
+    <div class="profile-name" id="profileNameDisplay">اسم الطالب</div>
+    <div class="profile-stage" id="profileStageDisplay">المرحلة الدراسية</div>
+    <div class="profile-stats">
+      <div class="pstat"><div class="num" id="pStatWatched">٠</div><div class="lbl">دروس مكتملة</div></div>
+      <div class="pstat"><div class="num" id="pStatRemaining">١٠</div><div class="lbl">دروس متبقية</div></div>
+      <div class="pstat"><div class="num" id="pStatPercent">٠٪</div><div class="lbl">نسبة الإنجاز</div></div>
+    </div>
+  </div>
+  <div class="profile-body">
+    <!-- Progress Card -->
+    <div class="profile-card">
+      <div class="profile-section-title">📊 مستوى التقدم</div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text2);margin-bottom:4px;">
+        <span id="pProgText">٠ من ١٠ دروس مكتملة</span>
+        <span id="pProgPct" style="font-weight:700;color:var(--blue);">٠٪</span>
+      </div>
+      <div class="big-progress-bar">
+        <div class="big-progress-fill" id="bigProgressFill" style="width:0%;"></div>
+      </div>
+      <div class="info-grid">
+        <div class="info-card"><div class="ic-num" id="ic-watched" style="color:var(--teal);">٠</div><div class="ic-lbl">مكتملة</div></div>
+        <div class="info-card"><div class="ic-num" id="ic-remaining" style="color:var(--blue);">١٠</div><div class="ic-lbl">متبقية</div></div>
+        <div class="info-card"><div class="ic-num" id="ic-pct" style="color:var(--amber);">٠٪</div><div class="ic-lbl">إنجاز</div></div>
+      </div>
+    </div>
+
+    <!-- Last lesson card -->
+    <div class="profile-card" id="lastLessonCard" style="display:none;">
+      <div class="profile-section-title">▶ آخر درس وصلت إليه</div>
+      <div id="lastLessonInfo" style="display:flex;align-items:center;gap:12px;">
+        <div style="flex:1;">
+          <div id="lastLessonTitle" style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;"></div>
+          <div id="lastLessonCat" style="font-size:11px;color:var(--text3);"></div>
+        </div>
+        <button class="resume-btn" onclick="resumeLastLesson()">▶ استكمل</button>
+      </div>
+    </div>
+
+    <!-- Completed lessons -->
+    <div class="profile-card">
+      <div class="profile-section-title">✅ الدروس المكتملة</div>
+      <div class="completed-list" id="completedList">
+        <div style="text-align:center;padding:2rem;color:var(--text3);font-size:13px;">لم تكمل أي درس بعد — ابدأ الآن! 🚀</div>
+      </div>
+    </div>
+
+    <!-- Edit profile -->
+    <div class="profile-card">
+      <div class="profile-section-title">✏️ تعديل الملف الشخصي</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="auth-field">
+          <label class="auth-label">الاسم الكامل</label>
+          <input type="text" class="auth-input" id="editName" placeholder="اسمك الكامل">
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">المرحلة الدراسية</label>
+          <select class="auth-select" id="editStage">
+            <option value="الروضة">الروضة (4-5 سنوات)</option>
+            <option value="الابتدائية الأولى">الابتدائية الأولى (6-7 سنوات)</option>
+            <option value="الابتدائية المتوسطة">الابتدائية المتوسطة (8-9 سنوات)</option>
+            <option value="الابتدائية العليا">الابتدائية العليا (10-12 سنة)</option>
+            <option value="الإعدادية">الإعدادية</option>
+          </select>
+        </div>
+        <button class="auth-btn" onclick="saveProfileEdit()" style="margin-top:4px;">💾 حفظ التعديلات</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PARENTS SECTION -->
+<!-- ============================================================ -->
+<div id="sec-parents" style="display:none;">
+<div class="main">
+  <div class="sec-head">
+    <div class="sec-eyebrow">👨‍👩‍👧 للأهل والمعلمين</div>
+    <h2 class="sec-title">شريك التعلم — معاك في كل خطوة</h2>
+    <p class="sec-sub">موارد متخصصة للأهل والمعلمين لدعم الطفل الأصم في رحلته التعليمية</p>
+  </div>
+  <div class="parent-grid">
+    <div class="parent-card">
+      <div class="parent-icon" style="background:var(--blue-pale);">📋</div>
+      <div class="parent-title">دليل استخدام المنصة</div>
+      <div class="parent-text">خطوة بخطوة — كيف تستخدم المنصة مع طفلك في البيت، وازاي تتابع تقدمه يومياً بطريقة ممتعة.</div>
+      <a href="https://www.youtube.com/results?search_query=لغة+إشارة+للأطفال+دليل+الأهل" target="_blank" class="parent-link">📺 شاهد الدليل ↗</a>
+    </div>
+    <div class="parent-card">
+      <div class="parent-icon" style="background:var(--teal-pale);">🤝</div>
+      <div class="parent-title">التواصل مع الطفل الأصم</div>
+      <div class="parent-text">تقنيات عملية للتواصل البصري — كيف تجذب انتباه طفلك، وتعبر عن المشاعر، وتشجعه بدون كلام.</div>
+      <a href="https://www.youtube.com/results?search_query=التواصل+مع+الطفل+الأصم" target="_blank" class="parent-link">📺 تعلم التواصل ↗</a>
+    </div>
+    <div class="parent-card">
+      <div class="parent-icon" style="background:var(--amber-pale);">📊</div>
+      <div class="parent-title">قياس التقدم الأكاديمي</div>
+      <div class="parent-text">أدوات بسيطة لقياس فهم طفلك للدروس وتتبع نموه المعرفي خلال الفصل الدراسي.</div>
+      <a href="https://www.youtube.com/results?search_query=تقييم+الطفل+الأصم+أكاديمياً" target="_blank" class="parent-link">📺 أدوات التقييم ↗</a>
+    </div>
+    <div class="parent-card">
+      <div class="parent-icon" style="background:var(--purple-pale);">🏫</div>
+      <div class="parent-title">دليل المعلم الشامل</div>
+      <div class="parent-text">كيف تدمج المحتوى البصري في الفصل الدراسي وتجعل الطفل الأصم مشارك فعال مع زملائه.</div>
+      <a href="https://www.youtube.com/results?search_query=تعليم+الطفل+الأصم+في+الفصل" target="_blank" class="parent-link">📺 للمعلمين ↗</a>
+    </div>
+    <div class="parent-card">
+      <div class="parent-icon" style="background:var(--coral-pale);">💡</div>
+      <div class="parent-title">أنشطة تعزيز في البيت</div>
+      <div class="parent-text">٢٠+ نشاط ممتع يمكن عمله في البيت لتعزيز ما تعلمه الطفل في المنصة — بدون أي معدات.</div>
+      <a href="https://www.youtube.com/results?search_query=أنشطة+تعليمية+للأطفال+الصم" target="_blank" class="parent-link">📺 شاهد الأنشطة ↗</a>
+    </div>
+    <div class="parent-card">
+      <div class="parent-icon" style="background:var(--teal-pale);">🧠</div>
+      <div class="parent-title">فهم الاحتياجات النفسية</div>
+      <div class="parent-text">دليل للتعامل مع المشاعر والاحتياجات النفسية للطفل الأصم، وبناء ثقته بنفسه وشعوره بالاندماج.</div>
+      <a href="https://www.youtube.com/results?search_query=الدعم+النفسي+للطفل+الأصم" target="_blank" class="parent-link">📺 الدعم النفسي ↗</a>
+    </div>
+  </div>
+  <div class="tips-wrap">
+    <div class="tips-title">🌟 نصائح ذهبية للأهل</div>
+    <div class="tips-sub">من أبرز ما أثبته علم النفس المعرفي في تعليم الأطفال الصم</div>
+    <div class="tips-grid">
+      <div class="tip-card"><div class="tip-num">١</div><div class="tip-text">اجلس على مستوى عيني طفلك دايماً — التواصل البصري هو لغتكم المشتركة الأولى</div></div>
+      <div class="tip-card"><div class="tip-num">٢</div><div class="tip-text">استخدم إيماءات اليد والوجه بشكل مبالغ — عقل طفلك يحتاج تفاصيل بصرية كتيرة</div></div>
+      <div class="tip-card"><div class="tip-num">٣</div><div class="tip-text">لما يكمل درس احتفل بصرياً — التصفيق والابتسامة والإبهام للأعلى أقوى من أي كلمة</div></div>
+      <div class="tip-card"><div class="tip-num">٤</div><div class="tip-text">كرر الفيديو أكتر من مرة — التعلم البصري يحتاج تراكم وتكرار لتثبيت المفاهيم</div></div>
+      <div class="tip-card"><div class="tip-num">٥</div><div class="tip-text">اطبع الجمل المكبرة من المنصة وعلقها في أوضة الطفل لتعزيز يومي مستمر</div></div>
+      <div class="tip-card"><div class="tip-num">٦</div><div class="tip-text">شاركه في اليوتيوب وخليه هو اللي يختار الدرس — الاستقلالية تبني الثقة بالنفس</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- THEORY SECTION -->
+<!-- ============================================================ -->
+<div id="sec-theory" style="display:none;">
+<div class="main">
+  <div class="sec-head">
+    <div class="sec-eyebrow">🧠 الأسس العلمية</div>
+    <h2 class="sec-title">المنصة مبنية على علم حقيقي</h2>
+    <p class="sec-sub">جسور الإشارة الرقمية ليست مجرد أداة — هي تطبيق عملي لأحدث نظريات علم النفس المعرفي</p>
+  </div>
+  <div class="theory-grid">
+    <div class="theory-card">
+      <div class="theory-top">
+        <div class="theory-num" style="background:var(--blue-pale);color:var(--blue);">١</div>
+        <div><div class="theory-name">نظرية التعويض الإدراكي</div><div class="theory-en">Perceptual Compensation Theory</div></div>
+      </div>
+      <div class="theory-text">حين يفقد الإنسان قناة حسية، تقوم القنوات الأخرى بتعويض هذا النقص وتقوية قدراتها.</div>
+      <div class="theory-apply">✅ المنصة تعتمد ١٠٠٪ على القناة البصرية كبديل أساسي للقناة السمعية</div>
+    </div>
+    <div class="theory-card">
+      <div class="theory-top">
+        <div class="theory-num" style="background:var(--teal-pale);color:var(--teal);">٢</div>
+        <div><div class="theory-name">نظرية التكملة الإدراكية</div><div class="theory-en">Perceptual Completion Theory</div></div>
+      </div>
+      <div class="theory-text">الدماغ يسعى تلقائياً لاستكمال المعلومات الناقصة لتكوين صورة ذهنية كاملة ومتسقة.</div>
+      <div class="theory-apply">✅ الرسوم والصور التوضيحية تسد الفجوات المعرفية وتمنح الدماغ كل ما يحتاجه</div>
+    </div>
+    <div class="theory-card">
+      <div class="theory-top">
+        <div class="theory-num" style="background:var(--amber-pale);color:var(--amber);">٣</div>
+        <div><div class="theory-name">الأطراف الاصطناعية المعرفية</div><div class="theory-en">Cognitive Prosthetics Theory</div></div>
+      </div>
+      <div class="theory-text">التكنولوجيا تعمل كامتداد للعقل البشري — تعوض القصور وتقلل العبء المعرفي.</div>
+      <div class="theory-apply">✅ المنصة تتولى فك الرموز وترجمتها بصرياً، فيتفرغ الطفل للفهم العميق</div>
+    </div>
+    <div class="theory-card">
+      <div class="theory-top">
+        <div class="theory-num" style="background:var(--purple-pale);color:var(--purple);">٤</div>
+        <div><div class="theory-name">التصميم الشامل للتعلم</div><div class="theory-en">Universal Design for Learning (UDL)</div></div>
+      </div>
+      <div class="theory-text">تقديم المحتوى بطرق متعددة يمنح المتعلم حرية الاختيار، فيشعر بالكرامة والاستقلالية.</div>
+      <div class="theory-apply">✅ الطفل يختار: فيديو إشارة، نص مكبر، أو رسوم متحركة — كل طريقة تناسب أسلوبه</div>
+    </div>
+  </div>
+  <div style="margin-top:2rem;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius2);padding:2rem;text-align:center;">
+    <div style="font-size:2.5rem;margin-bottom:1rem;">🎓</div>
+    <div style="font-family:'Tajawal',sans-serif;font-size:1.3rem;font-weight:900;color:var(--text);margin-bottom:.5rem;">تحت إشراف د/ إيمان العشيري</div>
+    <div style="font-size:13px;color:var(--text3);line-height:1.8;">مشروع جسور الإشارة الرقمية — منصة تعليمية تفاعلية لذوي الإعاقة السمعية · 2026<br>الفريق: أمل رشاد · الشيماء محمد · آية رمضان · أسماء عبد السلام · ذكرى ناصر · دينا فتحي · شهد محمد · مريم حسن · إسراء عشري · تقوى ناصر</div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- VIDEO MODAL -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="videoModal" onclick="closeModal(event)">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" onclick="closeModalBtn()">✕</button>
+    <div class="modal-video" id="modalVideoArea"></div>
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-box" style="position:relative;">
+    <div class="auth-header" style="position:relative;">
+      <button class="auth-close" onclick="closeAuth()">✕</button>
+      <div class="auth-logo-big">🤟</div>
+      <div class="auth-title">جسور الإشارة الرقمية</div>
+      <div class="auth-subtitle">منصة التعلم التفاعلي للأطفال</div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="loginTab" onclick="switchAuthTab('login')">تسجيل الدخول</button>
+      <button class="auth-tab" id="registerTab" onclick="switchAuthTab('register')">حساب جديد</button>
+    </div>
+
+    <!-- Login form -->
+    <div class="auth-form" id="loginForm">
+      <div class="auth-error" id="loginError">البريد الإلكتروني أو كلمة المرور غير صحيحة</div>
+      <div class="auth-field">
+        <label class="auth-label">البريد الإلكتروني</label>
+        <input type="email" class="auth-input" id="loginEmail" placeholder="example@email.com">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">كلمة المرور</label>
+        <input type="password" class="auth-input" id="loginPassword" placeholder="••••••••">
+      </div>
+      <button class="auth-btn" onclick="doLogin()">🔑 تسجيل الدخول</button>
+    </div>
+
+    <!-- Register form -->
+    <div class="auth-form hidden" id="registerForm">
+      <div class="auth-error" id="registerError">يرجى ملء جميع الحقول بشكل صحيح</div>
+      <div class="auth-field">
+        <label class="auth-label">الاسم الكامل</label>
+        <input type="text" class="auth-input" id="regName" placeholder="اسم الطالب كاملاً">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">البريد الإلكتروني</label>
+        <input type="email" class="auth-input" id="regEmail" placeholder="example@email.com">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">كلمة المرور</label>
+        <input type="password" class="auth-input" id="regPassword" placeholder="على الأقل ٦ أحرف">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">المرحلة الدراسية</label>
+        <select class="auth-select" id="regStage">
+          <option value="الروضة">الروضة (4-5 سنوات)</option>
+          <option value="الابتدائية الأولى" selected>الابتدائية الأولى (6-7 سنوات)</option>
+          <option value="الابتدائية المتوسطة">الابتدائية المتوسطة (8-9 سنوات)</option>
+          <option value="الابتدائية العليا">الابتدائية العليا (10-12 سنة)</option>
+          <option value="الإعدادية">الإعدادية</option>
+        </select>
+      </div>
+      <button class="auth-btn" onclick="doRegister()">✨ إنشاء الحساب</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ تم الحفظ بنجاح</div>
+
+</div><!-- END #platformContent -->
+
+<script>
+// ========== LESSONS DATA ==========
+const lessons = [
+  {id:1,cat:'math',title:'الأرقام والعد من ١ إلى ١٠',duration:'٨:٣٢',level:'مبتدئ',ytId:'S3dkVJemibM',
+   caption:'نعد معاً! <span class="hl">١ ٢ ٣ ٤ ٥</span>',
+   caption2:'كم تفاحة تشوف؟ <span class="hl">🍎🍎🍎</span>',
+   explanation:['الأرقام بالإشارة — كل رقم له شكل يد مختلف وواضح','عرض الرقم بالأصابع ثم ربطه بشيء ملموس موجود حولك','التعبير بالوجه مبالغ عند كل رقم جديد لتثبيت المعلومة'],
+   gestures:['يد اليمين ترسم الرقم في الهواء بحجم كبير','أصبع يرتفع مع كل رقم تدريجياً حتى تكتمل اليد','عيون مبالغة ودهشة عند ظهور الرقم الجديد'],
+   tags:['عد تصاعدي','ربط بصري','تعبير وجه']},
+  {id:2,cat:'math',title:'الجمع البسيط بالإشارة',duration:'٧:١٥',level:'مبتدئ',ytId:'bZ-kepjtydA',
+   caption:'واحد + اتنين = <span class="hl">تلاتة ٣</span>',
+   caption2:'الجمع سهل! <span class="hl">➕</span>',
+   explanation:['عرض الجمع بأصابع اليدين معاً — يد يمين + يد شمال','الرسم في الهواء لعلامة + ثم النتيجة بالأصابع','ربط الجمع بأشياء حقيقية — تفاحتين + تفاحة = ٣'],
+   gestures:['يدين تجتمعان في المنتصف لتمثيل الجمع','تعبير فرح وانتصار عند الوصول للنتيجة','إشارة علامة صح كبيرة بعد كل إجابة صحيحة'],
+   tags:['جمع','يدين','تعبير انتصار']},
+  {id:3,cat:'math',title:'الأشكال الهندسية بالإشارة',duration:'٩:٤٤',level:'مبتدئ',ytId:'PCqC4CnM-Jo',
+   caption:'هذه <span class="hl">دائرة</span> مستديرة 🔵',
+   caption2:'المربع له <span class="hl">٤ أضلاع</span>',
+   explanation:['رسم الشكل في الهواء بالأصابع بشكل كبير وواضح','الإشارة للأضلاع والزوايا بإيماءات مبالغة','ربط كل شكل بشيء من حياة الطفل — الساعة دائرة، الباب مستطيل'],
+   gestures:['رسم الدائرة بإصبع السبابة في الهواء','ضم الأصابع لتمثيل أضلاع المربع الأربعة','تعبير تساؤل عند السؤال عن اسم الشكل'],
+   tags:['أشكال','رسم في الهواء','ربط بالحياة']},
+  {id:4,cat:'arabic',title:'الحروف العربية — الجزء الأول',duration:'١١:٢٠',level:'مبتدئ',ytId:'YtjUeCM99u4',
+   caption:'هذا حرف <span class="hl">أ</span> مثل أسد 🦁',
+   caption2:'أ — <span class="hl">أسد أكل أرنب</span>',
+   explanation:['كل حرف له إشارة يد خاصة + صورة مرتبطة به','عرض الحرف بالخط الكبير + إشارته + الكلمة المرتبطة به','تعبير الوجه يختلف مع كل حرف لتمييزه بصرياً'],
+   gestures:['الإصبع يرسم شكل الحرف في الهواء بحجم كبير','الإشارة للصورة المرتبطة بالحرف على الشاشة','تعبير دهشة وفرح عند التعرف على الحرف'],
+   tags:['أبجدية','رسم الحروف','صور مرتبطة']},
+  {id:5,cat:'arabic',title:'الكلمات الأولى — الحروف بلغة الإشارة',duration:'٨:٥٥',level:'مبتدئ',ytId:'bGCmUFLp-FQ',
+   caption:'هذا حرف <span class="hl">ب</span> 📚',
+   caption2:'الحروف بالإشارة',
+   explanation:['كل كلمة بإشارة واحدة واضحة + صورة الشيء الحقيقي','التكرار ثلاث مرات لكل كلمة لتثبيتها في الذاكرة البصرية','ربط الكلمة بالشيء الموجود في غرفة الطفل فعلاً'],
+   gestures:['الإشارة للشيء الحقيقي أو صورته بنفس الوقت','حركة اليد تعبر عن شكل الشيء أو وظيفته','إيماء الرأس إيجابياً بعد كل كلمة صحيحة'],
+   tags:['مفردات','حروف','تكرار']},
+  {id:6,cat:'science',title:'أجزاء جسم الإنسان',duration:'١٠:١٢',level:'مبتدئ',ytId:'4C7KZ_G_pHc',
+   caption:'هذا <span class="hl">الرأس</span> 🤚',
+   caption2:'جسمي جميل وقوي 💪',
+   explanation:['الإشارة لكل جزء من الجسم مع تسميته بالإشارة','ربط كل عضو بوظيفته — العين ترى، الأذن تسمع','الرسوم تظهر الجسم من الداخل بطريقة بسيطة وملونة'],
+   gestures:['لمس الجزء المذكور فعلاً على الجسم أثناء إشارته','تعبير فخر وقوة عند الحديث عن الجسم السليم','حركة بطيئة من الرأس للقدم لعرض الجسم كاملاً'],
+   tags:['جسم الإنسان','لمس','وظائف الأعضاء']},
+  {id:7,cat:'science',title:'الفصول الأربعة والطبيعة',duration:'٩:٣٠',level:'مبتدئ',ytId:'Qnr6dl0xQV4',
+   caption:'الربيع <span class="hl">ورود وألوان</span> 🌸',
+   caption2:'الشتاء <span class="hl">بارد وممطر</span> 🌧️',
+   explanation:['كل فصل له إشارة + ألوان مرتبطة + أشياء مميزة','رسوم متحركة تظهر تحول الطبيعة من فصل لآخر','الإشارات تعبر عن الحرارة والبرد بحركات الجسم'],
+   gestures:['تعبير الوجه: ابتسامة للربيع، رعشة للشتاء','حركات اليدين: تمثيل المطر بأصابع تنزل للأسفل','الجسم كله يشارك في تمثيل درجة الحرارة'],
+   tags:['فصول','طبيعة','تعبير جسدي']},
+  {id:8,cat:'life',title:'كيف أعبر عن مشاعري',duration:'٧:٤٥',level:'مبتدئ',ytId:'dykjlJDLPwQ',
+   caption:'أنا <span class="hl">سعيد</span> جداً 😊',
+   caption2:'أنا <span class="hl">حزين</span> وأحتاج مساعدة',
+   explanation:['٨ مشاعر أساسية — كل شعور له إشارة وتعبير وجه مميز','الفرق بين المشاعر القوية والخفيفة من خلال حجم الإشارة','تعلم طلب المساعدة والتعبير عن الاحتياجات'],
+   gestures:['مبالغة في تعبيرات الوجه لكل شعور','حجم الإشارة يعبر عن قوة الشعور — صغير أو كبير','ربط الشعور بموقف حقيقي من حياة الطفل'],
+   tags:['مشاعر','تعبير','طلب مساعدة']},
+  {id:9,cat:'life',title:'التواصل مع الآخرين',duration:'٨:١٠',level:'متوسط',ytId:'0WtBeHjGahc',
+   caption:'<span class="hl">مرحبا!</span> أنا اسمي...',
+   caption2:'ممكن <span class="hl">تساعدني؟</span>',
+   explanation:['التحية والتعارف — أول خطوات التواصل الاجتماعي','طلب المساعدة والشكر والاعتذار بالإشارة','كيف تجذب انتباه شخص لا يراك بطرق بصرية'],
+   gestures:['التلويح الكبير لجذب الانتباه','لمس الكتف برفق كطريقة بديلة لطلب الانتباه','تعبير الوجه مبالغ في الامتنان والشكر'],
+   tags:['تواصل','تحية','شكر']},
+  {id:10,cat:'life',title:'الحفاظ على السلامة والأمان',duration:'٩:٠٠',level:'مبتدئ',ytId:'IRjKLNs8UTs',
+   caption:'هذا <span class="hl">خطر!</span> ابتعد 🚫',
+   caption2:'اتصل بـ <span class="hl">١٢٢</span> للطوارئ',
+   explanation:['إشارات التحذير والخطر — أهم إشارات الأمان','كيف تطلب المساعدة في حالة الطوارئ','الفرق بين الشخص الآمن وغير الآمن'],
+   gestures:['إشارة قف: راحة اليد للأمام بقوة وحزم','تعبير خوف حقيقي لإيصال خطورة الموقف','الإشارة لأرقام الطوارئ بالأصابع بوضوح'],
+   tags:['سلامة','طوارئ','تحذير']},
+];
+
+// ========== AUTH & STUDENT STATE ==========
+let currentUser = null;
+let studentData = {}; // keyed by email
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem('jsr_users');
+    if (saved) studentData = JSON.parse(saved);
+    const loggedIn = localStorage.getItem('jsr_current');
+    if (loggedIn) currentUser = loggedIn;
+  } catch(e) {}
+}
+
+function saveData() {
+  try {
+    localStorage.setItem('jsr_users', JSON.stringify(studentData));
+    if (currentUser) localStorage.setItem('jsr_current', currentUser);
+    else localStorage.removeItem('jsr_current');
+  } catch(e) {}
+}
+
+function getUser() {
+  if (!currentUser) return null;
+  return studentData[currentUser] || null;
+}
+
+function updateUser(patch) {
+  if (!currentUser) return;
+  studentData[currentUser] = Object.assign(studentData[currentUser] || {}, patch);
+  saveData();
+  updateAllUI();
+}
+
+// ========== LOGIN PAGE FUNCTIONS ==========
+function lpSwitchTab(tab) {
+  document.getElementById('lpLoginTab').classList.toggle('active', tab==='login');
+  document.getElementById('lpRegisterTab').classList.toggle('active', tab==='register');
+  document.getElementById('lpLoginForm').classList.toggle('hidden', tab!=='login');
+  document.getElementById('lpRegisterForm').classList.toggle('hidden', tab!=='register');
+  document.getElementById('lpLoginError').classList.remove('show');
+  document.getElementById('lpRegisterError').classList.remove('show');
+}
+
+document.getElementById('lpRegRole').addEventListener('change', function() {
+  const stageWrap = document.getElementById('lpStageWrap');
+  stageWrap.style.display = this.value === 'student' ? '' : 'none';
+});
+
+function lpDoLogin() {
+  const email = document.getElementById('lpLoginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('lpLoginPass').value;
+  const errEl = document.getElementById('lpLoginError');
+  if (!email || !pass) { errEl.textContent='يرجى ملء جميع الحقول'; errEl.classList.add('show'); return; }
+  const user = studentData[email];
+  if (!user || user.password !== pass) { errEl.textContent='البريد الإلكتروني أو كلمة المرور غير صحيحة'; errEl.classList.add('show'); return; }
+  currentUser = email;
+  saveData();
+  showPlatform();
+  showToast('🎉 أهلاً بعودتك، ' + user.name + '!');
+}
+
+function lpDoRegister() {
+  const name = document.getElementById('lpRegName').value.trim();
+  const email = document.getElementById('lpRegEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('lpRegPass').value;
+  const role = document.getElementById('lpRegRole').value;
+  const stage = document.getElementById('lpRegStage').value;
+  const errEl = document.getElementById('lpRegisterError');
+  if (!name || !email || !pass) { errEl.textContent='يرجى ملء جميع الحقول'; errEl.classList.add('show'); return; }
+  if (pass.length < 6) { errEl.textContent='كلمة المرور يجب أن تكون ٦ أحرف على الأقل'; errEl.classList.add('show'); return; }
+  if (studentData[email]) { errEl.textContent='هذا البريد مسجل مسبقاً'; errEl.classList.add('show'); return; }
+  studentData[email] = { name, email, password: pass, role, stage: role==='student'?stage:'', completedLessons: [], lastLesson: null, joinDate: new Date().toLocaleDateString('ar') };
+  currentUser = email;
+  saveData();
+  showPlatform();
+  showToast('🎉 مرحباً ' + name + '! تم إنشاء حسابك بنجاح');
+}
+
+// ========== PLATFORM SHOW/HIDE ==========
+function showPlatform() {
+  document.getElementById('loginPage').classList.remove('active');
+  document.getElementById('platformContent').style.display = 'block';
+  const user = getUser();
+  applyRoleVisibility(user);
+  renderTopbar();
+  renderLessons(lessons);
+  updateProgressUI();
+  updateProfileUI();
+  // Default section based on role
+  if (user && (user.role === 'parent' || user.role === 'teacher')) {
+    showSection('parents');
+    // Hide student-only nav
+    updateNavForRole(user.role);
+  } else {
+    showSection('home');
+    updateNavForRole(user ? user.role : 'student');
+  }
+}
+
+function applyRoleVisibility(user) {
+  // Nav buttons
+  const navLessons = document.querySelector('.tnav-btn[onclick*="lessons"]');
+  const navParents = document.querySelector('.tnav-btn[onclick*="parents"]');
+  const navHome = document.querySelector('.tnav-btn[onclick*="home"]');
+  if (!user) return;
+  if (user.role === 'parent' || user.role === 'teacher') {
+    // Hide student-specific nav
+    if (navLessons) navLessons.style.display = 'none';
+    document.getElementById('sec-lessons') && (document.getElementById('sec-lessons').style.display = 'none');
+    document.getElementById('sec-profile') && (document.getElementById('sec-profile').style.display = 'none');
+  } else {
+    // Student: hide parents section from nav (they can still see theory & lessons)
+    if (navParents) navParents.style.display = 'none';
+    document.getElementById('sec-parents') && (document.getElementById('sec-parents').style.display = 'none');
+  }
+}
+
+function updateNavForRole(role) {
+  const navLessons = document.querySelector('.tnav-btn[onclick*="lessons"]');
+  const navParents = document.querySelector('.tnav-btn[onclick*="parents"]');
+  if (role === 'parent' || role === 'teacher') {
+    if (navLessons) navLessons.style.display = 'none';
+  } else {
+    if (navParents) navParents.style.display = 'none';
+  }
+}
+
+function hidePlatform() {
+  document.getElementById('platformContent').style.display = 'none';
+  document.getElementById('loginPage').classList.add('active');
+  // Reset nav visibility
+  document.querySelectorAll('.tnav-btn').forEach(b => b.style.display = '');
+  // Reset section visibility
+  ['sec-lessons','sec-parents','sec-profile'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+}
+
+// ========== AUTH FUNCTIONS (modal — kept for compatibility) ==========
+function openAuth(tab='login') {
+  switchAuthTab(tab);
+  document.getElementById('authOverlay').classList.add('open');
+}
+function closeAuth() {
+  document.getElementById('authOverlay').classList.remove('open');
+  clearAuthErrors();
+}
+function switchAuthTab(tab) {
+  document.getElementById('loginTab').classList.toggle('active', tab==='login');
+  document.getElementById('registerTab').classList.toggle('active', tab==='register');
+  document.getElementById('loginForm').classList.toggle('hidden', tab!=='login');
+  document.getElementById('registerForm').classList.toggle('hidden', tab!=='register');
+  clearAuthErrors();
+}
+function clearAuthErrors() {
+  document.getElementById('loginError').classList.remove('show');
+  document.getElementById('registerError').classList.remove('show');
+}
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPassword').value;
+  if (!email || !pass) { showAuthError('login','يرجى ملء جميع الحقول'); return; }
+  const user = studentData[email];
+  if (!user || user.password !== pass) { showAuthError('login','البريد الإلكتروني أو كلمة المرور غير صحيحة'); return; }
+  currentUser = email;
+  saveData();
+  closeAuth();
+  updateAllUI();
+  showToast('🎉 أهلاً بعودتك، ' + user.name + '!');
+}
+
+function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('regPassword').value;
+  const stage = document.getElementById('regStage').value;
+  if (!name || !email || !pass) { showAuthError('register','يرجى ملء جميع الحقول'); return; }
+  if (pass.length < 6) { showAuthError('register','كلمة المرور يجب أن تكون ٦ أحرف على الأقل'); return; }
+  if (studentData[email]) { showAuthError('register','هذا البريد مسجل مسبقاً'); return; }
+  studentData[email] = { name, email, password: pass, role:'student', stage, completedLessons: [], lastLesson: null, joinDate: new Date().toLocaleDateString('ar') };
+  currentUser = email;
+  saveData();
+  closeAuth();
+  updateAllUI();
+  showToast('🎉 مرحباً ' + name + '! تم إنشاء حسابك بنجاح');
+}
+
+function doLogout() {
+  currentUser = null;
+  saveData();
+  closeDropdown();
+  hidePlatform();
+  showToast('👋 تم تسجيل الخروج بنجاح');
+}
+
+function showAuthError(form, msg) {
+  const el = document.getElementById(form+'Error');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+// ========== TOPBAR UI ==========
+function renderTopbar() {
+  const auth = document.getElementById('topbarAuth');
+  const user = getUser();
+  const logoutBtn = document.getElementById('topbarLogoutBtn');
+  if (logoutBtn) logoutBtn.style.display = user ? '' : 'none';
+  if (!user) {
+    auth.innerHTML = `
+      <button class="btn-login" onclick="openAuth('login')">تسجيل الدخول</button>
+      <button class="btn-register" onclick="openAuth('register')">حساب جديد</button>`;
+  } else {
+    const initials = user.name ? user.name.charAt(0) : '؟';
+    const pct = getProgressPct();
+    auth.innerHTML = `
+      <div class="profile-dropdown-wrap">
+        <button class="profile-avatar-btn" onclick="toggleDropdown()">
+          <div class="avatar-circle">${initials}</div>
+          <span class="avatar-name">${user.name}</span>
+          <span class="avatar-chevron">▾</span>
+        </button>
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="dropdown-header">
+            <div class="dh-name">${user.name}</div>
+            <div class="dh-email">${user.email}</div>
+            <div class="dh-progress">
+              <div class="dh-prog-label"><span>تقدمك</span><span>${pct}٪</span></div>
+              <div class="dh-prog-bar"><div class="dh-prog-fill" style="width:${pct}%;"></div></div>
+            </div>
+          </div>
+          <button class="dropdown-item" onclick="showSection('profile');closeDropdown()"><span class="di-icon">👤</span> ملفي الشخصي</button>
+          <button class="dropdown-item" onclick="showSection('profile');closeDropdown()"><span class="di-icon">📊</span> مستوى التقدم</button>
+          <button class="dropdown-item" onclick="showSection('profile');closeDropdown()"><span class="di-icon">✅</span> الدروس المكتملة</button>
+          <button class="dropdown-item danger" onclick="doLogout()"><span class="di-icon">🚪</span> تسجيل الخروج</button>
+        </div>
+      </div>`;
+  }
+}
+
+let dropdownOpen = false;
+function toggleDropdown() {
+  dropdownOpen = !dropdownOpen;
+  const d = document.getElementById('profileDropdown');
+  if (d) d.classList.toggle('open', dropdownOpen);
+}
+function closeDropdown() {
+  dropdownOpen = false;
+  const d = document.getElementById('profileDropdown');
+  if (d) d.classList.remove('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.profile-dropdown-wrap')) closeDropdown();
+});
+
+// ========== PROGRESS ==========
+function getProgressPct() {
+  const user = getUser();
+  if (!user) return 0;
+  return Math.round((user.completedLessons.length / lessons.length) * 100);
+}
+
+function updateProgressUI() {
+  const user = getUser();
+  const completed = user ? user.completedLessons.length : 0;
+  const total = lessons.length;
+  const pct = Math.round((completed / total) * 100);
+
+  // Main lessons page strip
+  const wc = document.getElementById('watchedCount');
+  if (wc) wc.textContent = toArabicNum(completed);
+  const pf = document.getElementById('mainProgressFill');
+  if (pf) pf.style.width = pct + '%';
+  const rb = document.getElementById('resumeBtn');
+  if (rb) rb.disabled = !(user && user.lastLesson);
+
+  // Profile page
+  const bpf = document.getElementById('bigProgressFill');
+  if (bpf) bpf.style.width = pct + '%';
+  const pt = document.getElementById('pProgText');
+  if (pt) pt.textContent = toArabicNum(completed) + ' من ' + toArabicNum(total) + ' دروس مكتملة';
+  const pp = document.getElementById('pProgPct');
+  if (pp) pp.textContent = toArabicNum(pct) + '٪';
+  const icw = document.getElementById('ic-watched');
+  if (icw) icw.textContent = toArabicNum(completed);
+  const icr = document.getElementById('ic-remaining');
+  if (icr) icr.textContent = toArabicNum(total - completed);
+  const icp = document.getElementById('ic-pct');
+  if (icp) icp.textContent = toArabicNum(pct) + '٪';
+
+  // Profile hero stats
+  const ps1 = document.getElementById('pStatWatched');
+  if (ps1) ps1.textContent = toArabicNum(completed);
+  const ps2 = document.getElementById('pStatRemaining');
+  if (ps2) ps2.textContent = toArabicNum(total - completed);
+  const ps3 = document.getElementById('pStatPercent');
+  if (ps3) ps3.textContent = toArabicNum(pct) + '٪';
+}
+
+function toArabicNum(n) {
+  return n.toString().replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+}
+
+function updateProfileUI() {
+  const user = getUser();
+  if (!user) return;
+  const name = document.getElementById('profileNameDisplay');
+  if (name) name.textContent = user.name;
+  const stage = document.getElementById('profileStageDisplay');
+  if (stage) stage.textContent = user.stage + ' · ' + user.email;
+
+  // Edit fields
+  const en = document.getElementById('editName');
+  if (en) en.value = user.name;
+  const es = document.getElementById('editStage');
+  if (es) es.value = user.stage;
+
+  // Last lesson
+  const llCard = document.getElementById('lastLessonCard');
+  if (user.lastLesson) {
+    const ll = lessons.find(l => l.id === user.lastLesson);
+    if (ll && llCard) {
+      llCard.style.display = '';
+      const llTitle = document.getElementById('lastLessonTitle');
+      if (llTitle) llTitle.textContent = ll.title;
+      const llCat = document.getElementById('lastLessonCat');
+      const catLabel = {math:'رياضيات',arabic:'لغة عربية',science:'علوم',life:'مهارات حياتية'}[ll.cat];
+      if (llCat) llCat.textContent = catLabel;
+    }
+  } else if (llCard) {
+    llCard.style.display = 'none';
+  }
+
+  // Completed list
+  const cl = document.getElementById('completedList');
+  if (cl) {
+    if (!user.completedLessons.length) {
+      cl.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text3);font-size:13px;">لم تكمل أي درس بعد — ابدأ الآن! 🚀</div>';
+    } else {
+      const catClass = {math:'cat-math',arabic:'cat-arabic',science:'cat-science',life:'cat-life'};
+      const catLabel = {math:'رياضيات',arabic:'لغة عربية',science:'علوم',life:'مهارات حياتية'};
+      cl.innerHTML = user.completedLessons.map(lid => {
+        const l = lessons.find(x=>x.id===lid);
+        if (!l) return '';
+        return `<div class="completed-item">
+          <div class="ci-check">✓</div>
+          <div class="ci-title">${l.title}</div>
+          <span class="ci-cat ${catClass[l.cat]}">${catLabel[l.cat]}</span>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+function saveProfileEdit() {
+  const name = document.getElementById('editName').value.trim();
+  const stage = document.getElementById('editStage').value;
+  if (!name) { showToast('⚠️ يرجى إدخال الاسم'); return; }
+  updateUser({ name, stage });
+  showToast('✅ تم حفظ التعديلات بنجاح');
+}
+
+function updateAllUI() {
+  renderTopbar();
+  updateProgressUI();
+  updateProfileUI();
+  renderLessons(currentFilteredData());
+  const user = getUser();
+  if (user) applyRoleVisibility(user);
+}
+
+// ========== LESSON COMPLETE ==========
+function markLessonComplete(lessonId) {
+  const user = getUser();
+  if (!user) { openAuth('login'); showToast('🔑 سجل الدخول أولاً لحفظ تقدمك'); return; }
+  if (!user.completedLessons.includes(lessonId)) {
+    user.completedLessons.push(lessonId);
+    updateUser({ completedLessons: user.completedLessons });
+    showToast('🎉 أحسنت! تم حفظ الدرس كمكتمل');
+  }
+}
+
+function isCompleted(lessonId) {
+  const user = getUser();
+  return user ? user.completedLessons.includes(lessonId) : false;
+}
+
+function resumeLastLesson() {
+  const user = getUser();
+  if (!user || !user.lastLesson) return;
+  openModal(user.lastLesson);
+}
+
+// ========== RENDER LESSONS ==========
+let _lastFilterData = lessons;
+function currentFilteredData() { return _lastFilterData; }
+
+function renderLessons(data) {
+  _lastFilterData = data;
+  const grid = document.getElementById('lessonsGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  if (!data.length) {
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text3);">لا توجد دروس مطابقة للبحث</div>';
+    return;
+  }
+  const catLabel={math:'رياضيات',arabic:'لغة عربية',science:'علوم',life:'مهارات حياتية'};
+  const catClass={math:'cat-math',arabic:'cat-arabic',science:'cat-science',life:'cat-life'};
+  data.forEach(l=>{
+    const done = isCompleted(l.id);
+    const card=document.createElement('div');
+    card.className='lesson-card' + (done ? ' completed' : '');
+    card.dataset.cat=l.cat;
+    card.dataset.id=l.id;
+    card.innerHTML=`
+      <div class="video-thumb" onclick="openModal(${l.id})">
+        <img src="https://img.youtube.com/vi/${l.ytId}/mqdefault.jpg"
+             style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;"
+             onerror="this.style.background='#1a3a6e';">
+        <div class="thumb-overlay"></div>
+        <div class="thumb-badge">${catLabel[l.cat]}</div>
+        <div class="thumb-duration">${l.duration}</div>
+        <div class="play-circle" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;">▶</div>
+      </div>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-cat ${catClass[l.cat]}">${catLabel[l.cat]}</span>
+          <div class="card-title">${l.title}</div>
+        </div>
+        <div class="card-explanation">
+          <div class="exp-label">📝 الشرح النصي</div>
+          <div class="exp-points">
+            ${l.explanation.map(e=>`<div class="exp-point"><div class="exp-dot"></div><span>${e}</span></div>`).join('')}
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-level">🎯 المستوى: ${l.level}</div>
+          <button class="card-watch" onclick="openModal(${l.id})">▶ شاهد الدرس</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ========== FILTER ==========
+let currentCat='all', currentSearch='';
+function filterCat(cat,btn){
+  currentCat=cat;
+  document.querySelectorAll('#catTabs .tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  applyFilter();
+}
+function filterLessons(q){ currentSearch=q; applyFilter(); }
+function applyFilter(){
+  let data=lessons;
+  if(currentCat!=='all') data=data.filter(l=>l.cat===currentCat);
+  if(currentSearch) data=data.filter(l=>l.title.includes(currentSearch)||l.explanation.some(e=>e.includes(currentSearch)));
+  renderLessons(data);
+}
+
+// ========== MODAL ==========
+let activeLesson = null;
+function openModal(id){
+  const l=lessons.find(x=>x.id===id);
+  if(!l) return;
+  activeLesson=l;
+
+  // Track last lesson
+  const user = getUser();
+  if (user) updateUser({ lastLesson: id });
+
+  const videoArea = document.getElementById('modalVideoArea');
+  const ytUrl = `https://www.youtube.com/watch?v=${l.ytId}`;
+  const ytThumb = `https://img.youtube.com/vi/${l.ytId}/hqdefault.jpg`;
+  videoArea.innerHTML = `
+    <div style="position:relative;width:100%;height:100%;background:#0a1628;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+      <img src="${ytThumb}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.45;pointer-events:none;">
+      <div style="position:relative;z-index:2;text-align:center;padding:1rem;">
+        <a href="${ytUrl}" target="_blank"
+           style="display:inline-flex;align-items:center;gap:12px;
+                  background:#ff0000;color:#fff;text-decoration:none;
+                  border-radius:12px;padding:14px 28px;
+                  font-family:'Cairo',sans-serif;font-size:16px;font-weight:700;
+                  box-shadow:0 4px 20px rgba(255,0,0,0.5);">
+          <span style="font-size:26px;">▶</span> شاهد الدرس على يوتيوب
+        </a>
+        <div style="color:rgba(255,255,255,0.7);font-size:12px;margin-top:10px;font-family:'Cairo',sans-serif;">
+          🤟 فعّل الترجمة CC بعد فتح الفيديو للحصول على النص العربي
+        </div>
+      </div>
+    </div>`;
+
+  const catLabel={math:'رياضيات',arabic:'لغة عربية',science:'علوم',life:'مهارات حياتية'}[l.cat];
+  const catIcon={math:'🔢',arabic:'📖',science:'🔬',life:'💬'}[l.cat];
+  const catBg={math:'var(--blue-pale)',arabic:'var(--amber-pale)',science:'var(--purple-pale)',life:'var(--teal-pale)'}[l.cat];
+  const done = isCompleted(l.id);
+  const completeBtnHtml = `<button class="mark-complete-btn ${done?'done':''}" id="completeBtn" onclick="${done?'':('markLessonComplete('+l.id+');updateCompleteBtn('+l.id+')')}">${done?'✅ تم الإكمال بالفعل':'✅ وضع علامة مكتمل'}</button>`;
+
+  document.getElementById('modalContent').innerHTML=`
+    <div class="modal-header">
+      <div class="modal-cat-icon" style="background:${catBg};">${catIcon}</div>
+      <div>
+        <div class="modal-title">${l.title}</div>
+        <div class="modal-subtitle">${catLabel} · المستوى: ${l.level} · مدة الفيديو: ${l.duration}</div>
+      </div>
+    </div>
+    <div class="modal-sections">
+      <div class="msec">
+        <div class="msec-title"><span>📺</span> الترجمة النصية المكبرة</div>
+        <div class="caption-hint">🤟 الترجمة مفعّلة تلقائياً في الفيديو — اضغط CC لو مش ظاهرة</div>
+        <div class="caption-screen">${l.caption}</div>
+        <div class="caption-screen">${l.caption2}</div>
+        <div class="tags-row">${l.tags.map(t=>`<span class="tag" style="background:var(--blue-pale);color:var(--blue);">${t}</span>`).join('')}</div>
+      </div>
+      <div class="msec">
+        <div class="msec-title"><span>🤟</span> حركات المترجم التوضيحية</div>
+        <div class="msec-list">
+          ${l.gestures.map((g,i)=>`<div class="msec-item"><div class="msec-num" style="background:var(--teal-pale);color:var(--teal);">${['أ','ب','ج'][i]}</div><span>${g}</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="msec">
+        <div class="msec-title"><span>📝</span> الشرح النصي التفصيلي</div>
+        <div class="msec-list">
+          ${l.explanation.map((e,i)=>`<div class="msec-item"><div class="msec-num" style="background:var(--amber-pale);color:var(--amber);">${i+1}</div><span>${e}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>
+    ${completeBtnHtml}`;
+
+  document.getElementById('videoModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function updateCompleteBtn(id) {
+  const btn = document.getElementById('completeBtn');
+  if (btn) {
+    btn.textContent = '✅ تم الإكمال بالفعل';
+    btn.classList.add('done');
+    btn.onclick = null;
+  }
+  // Refresh card state
+  const card = document.querySelector(`.lesson-card[data-id="${id}"]`);
+  if (card) card.classList.add('completed');
+  updateProgressUI();
+}
+
+function closeModal(e){
+  if(e.target===document.getElementById('videoModal')) closeModalBtn();
+}
+function closeModalBtn(){
+  document.getElementById('videoModal').classList.remove('open');
+  document.getElementById('modalVideoArea').innerHTML='';
+  document.body.style.overflow='';
+}
+
+// ========== NAVIGATION ==========
+const sections={home:'sec-home',lessons:'sec-lessons',parents:'sec-parents',theory:'sec-theory',profile:'sec-profile'};
+function showSection(key){
+  const user = getUser();
+  // If not logged in, redirect to login page
+  if (!user) { hidePlatform(); return; }
+  // Role-based section guard
+  if (key === 'lessons' && (user.role === 'parent' || user.role === 'teacher')) return;
+  if (key === 'parents' && user.role === 'student') return;
+
+  ['sec-lessons','sec-parents','sec-theory','sec-profile'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display='none';
+  });
+  const hero=document.getElementById('sec-home');
+  if(key==='home'){
+    if(hero) hero.style.display='';
+  } else {
+    if(hero) hero.style.display='none';
+    // Profile requires login
+    if(key==='profile' && !getUser()){ openAuth('login'); return; }
+    const target=document.getElementById(sections[key]);
+    if(target) target.style.display='block';
+  }
+  document.querySelectorAll('.tnav-btn').forEach((b,i)=>{
+    b.classList.remove('active');
+    if(['home','lessons','parents','theory'][i]===key) b.classList.add('active');
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(key==='profile') updateProfileUI();
+}
+
+// ========== TOAST ==========
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ========== INIT ==========
+document.addEventListener('DOMContentLoaded',()=>{
+  loadData();
+
+  // Gate: check if user is already logged in
+  if (currentUser && studentData[currentUser]) {
+    // Returning user — show platform directly
+    showPlatform();
+  } else {
+    // Not logged in — show login page only
+    document.getElementById('loginPage').classList.add('active');
+    document.getElementById('platformContent').style.display = 'none';
+  }
+
+  document.addEventListener('keydown',(e)=>{
+    if(e.key==='Escape'){
+      closeModalBtn();
+      closeAuth();
+    }
+  });
+});
+</script>
+</body>
+</html>
